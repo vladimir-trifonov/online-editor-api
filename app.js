@@ -8,7 +8,7 @@ var esClient = require('node-eventstore-client')
 var uuid = require('uuid')
 var streamName = 'onlineEditor'
 
-const TEXT_CHANGED = 'TEXT_CHANGED'
+const EDITOR_CHANGED = 'EDITOR_CHANGED'
 
 var connSettings = {}  // Use defaults
 var esConnection = esClient.createConnection(connSettings, 'tcp://localhost:1113')
@@ -25,10 +25,10 @@ app.use(bodyParser.json())
 
 app.post('/api/editor', (req, res) => {
   switch (req.body.action) {
-    case TEXT_CHANGED:
+    case EDITOR_CHANGED:
       var eventId = uuid.v4()
-      var eventData = { action: TEXT_CHANGED, text: req.body.text }
-      var event = esClient.createJsonEventData(eventId, eventData, null, TEXT_CHANGED)
+      var eventData = { action: EDITOR_CHANGED, editor: req.body.editor }
+      var event = esClient.createJsonEventData(eventId, eventData, null, EDITOR_CHANGED)
       console.log('Appending...')
       esConnection.appendToStream(streamName, esClient.expectedVersion.any, event)
         .then(function (result) {
